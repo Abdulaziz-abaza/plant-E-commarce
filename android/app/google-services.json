@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "187085613734",
+    "project_id": "flourapp-a9bf1",
+    "storage_bucket": "flourapp-a9bf1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:187085613734:android:8fe1b7b6580439f6ff6267",
+        "android_client_info": {
+          "package_name": "com.example.flourapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkKVnfy9Li2jISdl__7EFyxV-ZdGuu6AM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
