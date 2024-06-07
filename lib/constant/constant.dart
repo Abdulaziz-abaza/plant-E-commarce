@@ -7,6 +7,7 @@ class MyTextField extends StatelessWidget {
   final TextInputTypee;
   final suffixIconn;
   final TextEditingController mycontroller;
+  final String? Function(String?)? myvalidator;
 
   const MyTextField(
       {super.key,
@@ -15,13 +16,15 @@ class MyTextField extends StatelessWidget {
       this.obscureTextt,
       this.TextInputTypee,
       this.suffixIconn,
-      required this.mycontroller});
+      required this.mycontroller,
+      required this.myvalidator});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.all(10.0),
       child: TextFormField(
+        validator: myvalidator,
         controller: mycontroller,
         obscureText: obscureTextt,
         keyboardType: TextInputTypee,

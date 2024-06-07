@@ -43,14 +43,21 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => Cart(),
-      child: MaterialApp(debugShowCheckedModeBanner: false, routes: {
-        '/': (context) => Splashscreen(),
-        '/LoginView': (context) => const LoginView(),
-        '/RegisterPage': (context) => RegisterPage(),
-        '/HomeScreen': (context) => HomeScreen(),
-        '/detaielsScreen': (context) => DetailsScreen(item: products[1]),
-        '/checkOutScrren': (context) => checkOutScrren(),
-      }),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        routes: {
+          '/': (context) => Splashscreen(),
+          '/LoginView': (context) =>
+              FirebaseAuth.instance.currentUser == null &&
+                      FirebaseAuth.instance.currentUser!.emailVerified
+                  ? RegisterPage()
+                  : LoginView(),
+          '/RegisterPage': (context) => RegisterPage(),
+          '/HomeScreen': (context) => HomeScreen(),
+          '/detaielsScreen': (context) => DetailsScreen(item: products[1]),
+          '/checkOutScrren': (context) => checkOutScrren(),
+        },
+      ),
     );
   }
 }

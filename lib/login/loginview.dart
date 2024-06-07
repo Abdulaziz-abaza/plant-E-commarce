@@ -1,15 +1,15 @@
-// ignore_for_file: prefer_const_constructors
-
+// ignore_for_file: use_build_context_synchronously
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flourapp/auth/googleauth.dart';
 import 'package:flourapp/constant/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:lottie/lottie.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+// import 'package:flutter_svg/flutter_svg.dart';
 
 class LoginView extends StatefulWidget {
-  const LoginView({super.key});
+  LoginView({super.key});
   @override
   State<LoginView> createState() => _LoginViewState();
 }
@@ -17,104 +17,182 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
+
+  GlobalKey<FormState> formkey = GlobalKey<FormState>();
+  bool _obscureText = true;
+
+  void _togglePasswordVisibility() {
+    setState(() {
+      _obscureText = !_obscureText;
+    });
+  }
+
+  void resetFields() {
+    setState(() {
+      email.clear();
+      password.clear();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Container(
-        margin: const EdgeInsets.only(bottom: 100),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              decoration: const BoxDecoration(shape: BoxShape.circle),
-              height: 200,
-              width: 400,
-              child: Lottie.asset('assets/splash.json'),
-            ),
-            MyTextField(
-              mycontroller: email,
-              myhintText: 'Email',
-              mylabel: 'Email',
-              obscureTextt: false,
-              TextInputTypee: TextInputType.emailAddress,
-              suffixIconn: Icon(Icons.email),
-            ),
-            MyTextField(
-              mycontroller: password,
-              TextInputTypee: TextInputType.multiline,
-              obscureTextt: true,
-              suffixIconn: Icon(Icons.remove_red_eye),
-              myhintText: 'Password',
-              mylabel: 'Password',
-            ),
-            MyButton(
-              btnText: 'Log in',
-              onPressedee: () async {
-                try {
-                  final credential =
-                      await FirebaseAuth.instance.signInWithEmailAndPassword(
-                    email: email.text,
-                    password: password.text,
-                  );
-
-                  Navigator.pushReplacementNamed(context, '/HomeScreen');
-                } on FirebaseAuthException catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      duration:
-                          const Duration(milliseconds: 4000), // default 4s
-                      content: const Text('some thing erorr ان كان عاجبك'),
-                    ),
-                  );
-                  if (e.code == 'user-not-found') {
-                    print('No user found for that email.');
-                  } else if (e.code == 'wrong-password') {
-                    print('Wrong password provided for that user.');
-                  }
-                }
-                print('helloqqqq');
-              },
-            ),
-            Text('or sign in with'),
-            Row(
+      body: SingleChildScrollView(
+        child: Container(
+          margin: const EdgeInsets.only(top: 70),
+          child: Form(
+            key: formkey,
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                IconButton(
-                    onPressed: () {},
+                Container(
+                  decoration: const BoxDecoration(shape: BoxShape.circle),
+                  height: 200,
+                  width: 400,
+                  child: Lottie.asset('assets/splash.json'),
+                ),
+                MyTextField(
+                  myvalidator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Please Enter Your Email';
+                    }
+                    return null;
+                  },
+                  mycontroller: email,
+                  myhintText: 'Email',
+                  mylabel: 'Email',
+                  obscureTextt: false,
+                  TextInputTypee: TextInputType.emailAddress,
+                  suffixIconn: const Icon(Icons.email),
+                ),
+                MyTextField(
+                  myvalidator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Please Enter Your Password';
+                    }
+                    return null;
+                  },
+                  mycontroller: password,
+                  TextInputTypee: TextInputType.text,
+                  obscureTextt: _obscureText,
+                  suffixIconn: IconButton(
                     icon: Icon(
-                      Icons.facebook,
-                      color: Colors.blue,
-                      size: 60,
-                    )),
-                IconButton(
-                    onPressed: () {},
-                    icon: SvgPicture.network(
-                      'assets/google.svg',
-                      // '	https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg',
-                      height: 60.0,
-                      width: 60.0,
-                      placeholderBuilder: (BuildContext context) =>
-                          CircularProgressIndicator(),
-                    )),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text("Don't have an account?",
+                      _obscureText
+                          ? Icons.remove_red_eye
+                          : Icons.visibility_off,
+                    ),
+                    onPressed: _togglePasswordVisibility,
+                  ),
+                  myhintText: 'Password',
+                  mylabel: 'Password',
+                ),
+                SizedBox(
+                    child: mytextbtn(
+                        myTextt: 'Forget Password?', onPressedee: () {})),
+                MyButton(
+                  btnText: 'Log in',
+                  onPressedee: () async {
+                    if (formkey.currentState!.validate()) {
+                      try {
+                        final credential = await FirebaseAuth.instance
+                            .signInWithEmailAndPassword(
+                          email: email.text,
+                          password: password.text,
+                        );
+                        if (credential.user!.emailVerified) {
+                          Navigator.pushReplacementNamed(
+                              context, '/HomeScreen');
+                        } else {
+                          FirebaseAuth.instance.currentUser!
+                              .sendEmailVerification();
+                          const SnackBar(
+                            duration: Duration(milliseconds: 4000),
+                            content: Text('go to your email ان كان عاجبك'),
+                          );
+                        }
+                      } on FirebaseAuthException catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            duration: Duration(milliseconds: 4000),
+                            content: Text('some thing erorr ان كان عاجبك'),
+                          ),
+                        );
+                        if (e.code == 'user-not-found') {
+                          print('No user found for that email.');
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              duration: Duration(milliseconds: 4000),
+                              content: Text('No user found for that email.'),
+                            ),
+                          );
+                        } else if (e.code == 'wrong-password') {
+                          print('Wrong password provided for that user.');
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              duration: Duration(milliseconds: 4000),
+                              content: Text(
+                                  'Wrong password provided for that user.'),
+                            ),
+                          );
+                        }
+                      }
+                    } else {}
+                    // resetFields();
+                  },
+                ),
+                const myspace(),
+                const Divider(),
+                const Text('or sign in with',
                     style: TextStyle(
                       color: AppConstants.textColor,
                       fontSize: AppConstants.largeFontSize,
                     )),
-                mytextbtn(
-                    myTextt: 'Sign up',
-                    onPressedee: () {
-                      Navigator.pushReplacementNamed(context, '/RegisterPage');
-                    })
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                        onPressed: () {},
+                        icon: const Icon(
+                          Icons.facebook,
+                          color: Colors.blue,
+                          size: 55,
+                        )),
+                    IconButton(
+                        onPressed: () {
+                          signInWithGoogle(context);
+                        },
+                        icon: ClipRRect(
+                          borderRadius: BorderRadius.circular(110),
+                          child: Container(
+                            child: Image.asset(
+                              'assets/google.png',
+                              width: 55,
+                              height: 55,
+                            ),
+                          ),
+                        )),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text("Don't have an account?",
+                        style: TextStyle(
+                          color: AppConstants.textColor,
+                          fontSize: AppConstants.largeFontSize,
+                        )),
+                    mytextbtn(
+                        myTextt: 'Sign up',
+                        onPressedee: () {
+                          Navigator.pushReplacementNamed(
+                              context, '/RegisterPage');
+                        })
+                  ],
+                ),
               ],
-            )
-          ],
+            ),
+          ),
         ),
       ),
     );
