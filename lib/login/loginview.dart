@@ -87,9 +87,35 @@ class _LoginViewState extends State<LoginView> {
                   myhintText: 'Password',
                   mylabel: 'Password',
                 ),
-                SizedBox(
-                    child: mytextbtn(
-                        myTextt: 'Forget Password?', onPressedee: () {})),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    SizedBox(
+                        child: mytextbtn(
+                            myTextt: 'Forget Password?',
+                            textColor: AppConstants.accentColor,
+                            fontSize: AppConstants.mediumFontSize,
+                            onPressedee: () async {
+                              if (email.text == "") {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    duration: Duration(milliseconds: 4000),
+                                    content: Text('Please Enter Your Email'),
+                                  ),
+                                );
+                                return;
+                              }
+                              await FirebaseAuth.instance
+                                  .sendPasswordResetEmail(email: email.text);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  duration: Duration(milliseconds: 4000),
+                                  content: Text('Password Reset Email Sent'),
+                                ),
+                              );
+                            })),
+                  ],
+                ),
                 MyButton(
                   btnText: 'Log in',
                   onPressedee: () async {
@@ -106,24 +132,21 @@ class _LoginViewState extends State<LoginView> {
                         } else {
                           FirebaseAuth.instance.currentUser!
                               .sendEmailVerification();
-                          const SnackBar(
-                            duration: Duration(milliseconds: 4000),
-                            content: Text('go to your email ان كان عاجبك'),
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              duration: Duration(milliseconds: 4000),
+                              content: Text('Email Verification Sent'),
+                            ),
                           );
                         }
                       } on FirebaseAuthException catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            duration: Duration(milliseconds: 4000),
-                            content: Text('some thing erorr ان كان عاجبك'),
-                          ),
-                        );
                         if (e.code == 'user-not-found') {
                           print('No user found for that email.');
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               duration: Duration(milliseconds: 4000),
-                              content: Text('No user found for that email.'),
+                              content:
+                                  Text('No user found for that email.........'),
                             ),
                           );
                         } else if (e.code == 'wrong-password') {
@@ -141,7 +164,7 @@ class _LoginViewState extends State<LoginView> {
                     // resetFields();
                   },
                 ),
-                const myspace(),
+                myspace(),
                 const Divider(),
                 const Text('or sign in with',
                     style: TextStyle(
@@ -187,6 +210,11 @@ class _LoginViewState extends State<LoginView> {
                         onPressedee: () {
                           Navigator.pushReplacementNamed(
                               context, '/RegisterPage');
+                        }),
+                    mytextbtn(
+                        myTextt: 'note up',
+                        onPressedee: () {
+                          Navigator.pushNamed(context, '/addnotefolder');
                         })
                   ],
                 ),

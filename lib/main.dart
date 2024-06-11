@@ -5,6 +5,8 @@ import 'package:flourapp/constant/Screen/checkout.dart';
 import 'package:flourapp/constant/Screen/detaielsScreen.dart';
 import 'package:flourapp/login/loginview.dart';
 import 'package:flourapp/login/registerview.dart';
+import 'package:flourapp/notes/addnote.dart';
+import 'package:flourapp/notes/addnotefolder.dart';
 import 'package:flourapp/provider/cart.dart';
 import 'package:flutter/material.dart';
 import 'constant/Screen/function/listofprodct.dart';
@@ -13,6 +15,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(
       // options: DefaultFirebaseOptions.currentPlatform,
       );
@@ -56,6 +59,8 @@ class _MyAppState extends State<MyApp> {
           '/HomeScreen': (context) => HomeScreen(),
           '/detaielsScreen': (context) => DetailsScreen(item: products[1]),
           '/checkOutScrren': (context) => checkOutScrren(),
+          '/addnotefolder': (context) => addnotefolder(),
+          '/addnote': (context) => addnote(),
         },
       ),
     );

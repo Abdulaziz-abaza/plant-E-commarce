@@ -106,9 +106,17 @@ class AppConstants {
 class mytextbtn extends StatefulWidget {
   final String myTextt;
   final Function() onPressedee;
+  final Color? textColor;
+  final double? fontSize;
+  final FontWeight? fontWeight;
 
   const mytextbtn(
-      {super.key, required this.myTextt, required this.onPressedee});
+      {super.key,
+      required this.myTextt,
+      required this.onPressedee,
+      this.textColor,
+      this.fontSize,
+      this.fontWeight});
 
   @override
   State<mytextbtn> createState() => _mytextbtnState();
@@ -122,8 +130,8 @@ class _mytextbtnState extends State<mytextbtn> {
         child: Text(
           widget.myTextt,
           style: TextStyle(
-            color: AppConstants.textColor,
-            fontSize: AppConstants.largeFontSize,
+            color: widget.textColor ?? AppConstants.textColor,
+            fontSize: widget.fontSize ?? AppConstants.largeFontSize,
           ),
         ));
   }
